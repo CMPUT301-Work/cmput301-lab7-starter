@@ -2,6 +2,7 @@ package com.example.androiduitesting;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,17 @@ public class MainActivity extends AppCompatActivity {
         //String []cities ={"Edmonton", "Vancouver", "Moscow", "Sydney", "Berlin", "Vienna", "Tokyo", "Beijing", "Osaka", "New Delhi"};
 
         dataList = new ArrayList<>();
+
+        // To switch to the ShowActivity class
+        cityList.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedCity = dataList.get(position);
+            // Create an intent to switch to the new city
+            Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+            // Send the city name
+            intent.putExtra("CITY_NAME", selectedCity);
+            // Start the new activity
+            startActivity(intent);
+        });
 
         //dataList.addAll(Arrays.asList(cities));
 

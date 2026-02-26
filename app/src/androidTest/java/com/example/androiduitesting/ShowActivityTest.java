@@ -19,17 +19,27 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import android.content.Intent;
+import androidx.test.espresso.intent.Intents;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class MainActivityTest {
+public class ShowActivityTest {
+    // Runs an instance of MainActivity for every test
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
+
     @Test
-    public void testAddCity(){
+    public void testActivitySwitching() {
+        // Start capturing intents
+        Intents.init();
+
         // Click on Add City button
         onView(withId(R.id.button_add)).perform(click());
 
@@ -39,42 +49,55 @@ public class MainActivityTest {
         // Click on Confirm
         onView(withId(R.id.button_confirm)).perform(click());
 
-        // Check if text "Edmonton" is matched with any of the text displayed on the screen
-        onView(withText("Edmonton")).check(matches(isDisplayed()));
+        // Click on city
+        onData(is("Edmonton")).inAdapterView((withId(R.id.city_list))).perform(click());
+
+        // Check intent
+        intended(hasComponent(ShowActivity.class.getName()));
+        Intents.release();
     }
 
     @Test
-    public void testClearCity(){
-        // Add first city to the list
+    public void testCityName() {
+        // Click on Add City button
         onView(withId(R.id.button_add)).perform(click());
+
+        // Type "Edmonton" in the editText
         onView(withId(R.id.editText_name)).perform(ViewActions.typeText("Edmonton"));
+
+        // Click on Confirm
         onView(withId(R.id.button_confirm)).perform(click());
 
-        //Add another city to the list
-        onView(withId(R.id.button_add)).perform(click());
-        onView(withId(R.id.editText_name)).perform(ViewActions.typeText("Vancouver"));
-        onView(withId(R.id.button_confirm)).perform(click());
+        // Click on city
+        onData(is("Edmonton")).inAdapterView((withId(R.id.city_list))).perform(click());
 
-        //Clear the list
-        onView(withId(R.id.button_clear)).perform(click());
-        onView(withText("Edmonton")).check(doesNotExist());
-        onView(withText("Vancouver")).check(doesNotExist());
+        // Check city name
+        onView(withId(R.id.text_cityName)).check(matches(withText("Edmonton")));
     }
 
     @Test
-    public void testListView(){
-        // Add a city
+    public void testBackButton() {
+        // Start capturing intents
+        Intents.init();
+
+        // Click on Add City button
         onView(withId(R.id.button_add)).perform(click());
+
+        // Type "Edmonton" in the editText
         onView(withId(R.id.editText_name)).perform(ViewActions.typeText("Edmonton"));
+
+        // Click on Confirm
         onView(withId(R.id.button_confirm)).perform(click());
 
-        // Check if in the Adapter view (given id of that adapter view), there is a data
-        // (which is an instance of String) located at position zero.
-        // If this data matches the text we provided then Voila! Our test should pass
-        // You can also use anything() in place of is(instanceOf(String.class))
-        onData(is(instanceOf(String.class)))
-                .inAdapterView(withId(R.id.city_list))
-                .atPosition(0)
-                .check(matches((withText("Edmonton"))));
+        // Click on city
+        onData(is("Edmonton")).inAdapterView((withId(R.id.city_list))).perform(click());
+
+        // Click the back button
+        onView(withId(R.id.button_back)).perform(click());
+
+        // Check intent
+        intended(hasComponent(MainActivity.class.getName()));
+        Intents.release();
     }
 }
+
