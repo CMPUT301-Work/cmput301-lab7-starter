@@ -95,8 +95,9 @@ public class ShowActivityTest {
         // Click the back button
         onView(withId(R.id.button_back)).perform(click());
 
-        // Check intent
-        intended(hasComponent(MainActivity.class.getName()));
+        // Check MainActivity is visible again by verifying ListView is displayed
+        onView(withId(R.id.city_list)).check(matches(isDisplayed()));
+
         Intents.release();
     }
 }
